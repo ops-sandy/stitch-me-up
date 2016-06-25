@@ -1,0 +1,34 @@
+{
+  "name": "stitch-me-up",
+  "version": "0.1.0",
+  "description": "Stitch microservices together locally or in the cloud with docker & docker-compose.",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/diosmosis/stitch-me-up.git"
+  },
+  "keywords": [
+    "docker",
+    "microservice",
+    "docker-compose",
+    "local",
+    "deployment"
+  ],
+  "author": "diosmosis",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/diosmosis/stitch-me-up/issues"
+  },
+  "homepage": "https://github.com/diosmosis/stitch-me-up#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "co-mocha": "^1.1.2",
+    "eslint": "^2.13.1",
+    "eslint-config-airbnb-base": "^3.0.1",
+    "eslint-plugin-import": "^1.9.2",
+    "mocha": "^2.5.3"
+  }
+}
