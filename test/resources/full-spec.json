@@ -1,0 +1,54 @@
+{
+  "namespace": "example",
+  "public": [
+    "web",
+    "dynamodb"
+  ],
+  "services": {
+    "web": {
+      "image": "node:4",
+      "ports": [
+        "1337:1337"
+      ],
+      "volumes": [
+        ".:/cds",
+        "~/.aws:/root/.aws"
+      ],
+      "working_dir": "/cds",
+      "depends_on": [
+        "dynamodb",
+        "redis"
+      ],
+      "environment": [
+        "AWS_PROFILE=${AWS_PROFILE}",
+        "AWS_REGION=${AWS_REGION}",
+        "NODE_ENV=test"
+      ],
+      "command": [
+        "npm",
+        "start"
+      ]
+    },
+    "dynamodb": {
+      "image": "peopleperhour/dynamodb",
+      "ports": [
+        "8000:8000"
+      ]
+    },
+    "redis": {
+      "image": "redis",
+      "ports": [
+        "6379:6379"
+      ]
+    }
+  },
+  "dependencies": [
+    "testMicrosvc",
+    "feature-flags"
+  ],
+  "setup": [
+    "npm install",
+    "grunt build"
+  ],
+  "root": "services"
+}
