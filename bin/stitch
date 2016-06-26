@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+'use strict'
+
+const Application = require('../lib/cli')
+
+const app = new Application()
+app.run(process.argv).then(() => {
+  console.log('DONE')
+}, (error) => {
+  console.log(error)
+})
