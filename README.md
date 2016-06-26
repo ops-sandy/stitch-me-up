@@ -1,2 +1,3 @@
 # stitch-me-up
-Stitch together different microservices together locally or in the cloud with docker &amp; docker-compose.
+
+Stitch microservices together with docker & docker-compose.

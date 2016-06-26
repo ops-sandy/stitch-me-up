@@ -1,7 +1,7 @@
 {
   "name": "stitch-me-up",
   "version": "0.1.0",
-  "description": "Stitch microservices together locally or in the cloud with docker & docker-compose.",
+  "description": "Stitch microservices together with docker & docker-compose.",
   "main": "lib/index.js",
   "scripts": {
     "lint": "eslint .",
