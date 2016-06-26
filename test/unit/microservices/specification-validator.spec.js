@@ -1,12 +1,11 @@
 'use strict'
 
-const path = require('path')
 const MicroserviceSpecificationValidator = require('../../../lib/microservice/specification-validator')
-const MicroserviceEcosystem = require('../../../lib/microservice/ecosystem')
+const MicroserviceRegistry = require('../../../lib/microservice/registry')
 const expect = require('chai').expect
 
-const FULL_SPEC_PATH = path.join(__dirname, '../../resources/full-spec')
-const FULL_SPEC = require(FULL_SPEC_PATH)
+const FULL_SPEC = require('../../resources/full-spec')
+const REGISTRY_SPEC = require('../../resources/registry')
 
 describe('MicroserviceSpecificationValidator', function () {
   describe('#validate()', function () {
@@ -15,15 +14,12 @@ describe('MicroserviceSpecificationValidator', function () {
       spec = JSON.parse(JSON.stringify(FULL_SPEC))
     })
 
-    let ecosystem
+    let registry
     let validator
     beforeEach(function () {
-      ecosystem = new MicroserviceEcosystem({
-        testMicrosvc: {},
-        'feature-flags': {},
-      })
+      registry = new MicroserviceRegistry(REGISTRY_SPEC)
 
-      validator = new MicroserviceSpecificationValidator(ecosystem)
+      validator = new MicroserviceSpecificationValidator(registry)
     })
 
     it('should not throw when given a full, valid specification', function () {
