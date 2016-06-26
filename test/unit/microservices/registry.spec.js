@@ -8,6 +8,8 @@ const MicroserviceRegistry = require('../../../lib/microservice/registry')
 const TEST_CACHE_DIR = path.join(__dirname, '../../resources/cache-dir')
 const REGISTRY_SPEC = require('../../resources/registry')
 const EXPECTED_REGISTRY_MAP = require('../../resources/expected-registry-map')
+const FEATURE_FLAGS_DIR = path.join(__dirname,
+  '../../resources/cache-dir/feature-flags-mocks/feature-flags')
 
 const EXPECTED_SERVICE_YML = {
   namespace: 'ns',
@@ -94,7 +96,35 @@ describe('MicroserviceRegistry', function () {
       expect(testMicrosvcMock).to.deep.equal(EXPECTED_SERVICE_YML)
 
       const featureFlagsMock = yield registry.resolve('feature-flags-mocks')
-      expect(featureFlagsMock).to.deep.equal(EXPECTED_SERVICE_YML)
+      expect(featureFlagsMock).to.deep.equal(Object.assign({}, EXPECTED_SERVICE_YML, {
+        namespace: 'ff',
+      }))
+    })
+
+    it('should use the override path if a directory is linked', function * () {
+      registry.link('testMicrosvc', FEATURE_FLAGS_DIR)
+
+      const testMicrosvc = yield registry.resolve('testMicrosvc')
+      expect(testMicrosvc).to.deep.equal(Object.assign({}, EXPECTED_SERVICE_YML, {
+        namespace: 'ff',
+      }))
+    })
+  })
+
+  describe('#link()', function () {
+    it('should throw if the requested service does not exist', function () {
+      expect(() => registry.link('notaservice', '/path/to/nowhere')).to.throw(Error,
+        'Unknown service \'notaservice\' requested, make sure it is in the regisry.')
+    })
+
+    it('should throw if the path to link to does not exist', function () {
+      expect(() => registry.link('testMicrosvc', '/path/to/nowhere')).to.throw(Error,
+        'Attempting to link invalid service directory \'/path/to/nowhere\' to service \'testMicrosvc\'.')
+    })
+
+    it('should set the override path for the given service', function () {
+      registry.link('testMicrosvc', __dirname)
+      expect(registry.serviceRegistry.testMicrosvc.pathOverride).to.equal(__dirname)
     })
   })
 })

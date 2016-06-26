@@ -37,6 +37,7 @@
     "co": "^4.6.0",
     "co-exec": "^1.1.0",
     "commander": "^2.9.0",
+    "fs-utils": "^0.7.0",
     "js-yaml": "^3.6.1",
     "passthru": "^0.4.0",
     "request-promise": "^3.0.0",
