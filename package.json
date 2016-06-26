@@ -36,6 +36,7 @@
   "dependencies": {
     "co": "^4.6.0",
     "co-exec": "^1.1.0",
+    "js-yaml": "^3.6.1",
     "valid-url": "^1.0.9"
   }
 }
