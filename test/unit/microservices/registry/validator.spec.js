@@ -23,6 +23,13 @@ describe('MicroServiceRegistryValidator', function () {
       expect(() => validator.validate(spec)).to.not.throw(Error)
     })
 
+    it('should throw if a service name ends with -mocks', function () {
+      spec['myservice-mocks'] = {}
+      expect(() => validator.validate(spec)).to.throw(Error,
+        'Invalid microservice registry: section \'myservice-mocks\' cannot have name that ends '
+        + 'with \'-mocks\', this suffix is reserved.\'')
+    })
+
     it('should throw if the registry is not an object', function () {
       spec = []
       expect(() => validator.validate(spec)).to.throw(Error,

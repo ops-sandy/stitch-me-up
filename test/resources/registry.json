@@ -1,6 +1,6 @@
 {
   "testMicrosvc": {
-    "git": "ssh+git@github.com:myapp/testMicrosvc",
+    "git": "git@github.com:myapp/testMicrosvc",
     "mocks": {
       "git": "ssh+git@github.com/myapp/service-mocks",
       "root": "testMicrosvc"
@@ -11,10 +11,10 @@
     }
   },
   "feature-flags": {
-    "git": "ssh+git@github.com:myapp/feature-flags",
+    "git": "git@github.com:myapp/feature-flags",
     "root": "service",
     "mocks": {
-      "git": "ssh+git@github.com/myapp/service-mocks",
+      "git": "git@github.com/myapp/service-mocks",
       "root": "feature-flags"
     },
     "environments": {
