@@ -1,17 +1,29 @@
 {
-  "TODO": "there should be services that aren't in the public default network",
   "networks": {
     "testMicrosvc_net": {},
     "feature-flags_net": {},
     "service-registry_net": {}
   },
   "services": {
+    "testMicrosvc_redis": {
+      "image": "redis",
+      "networks": [
+        "default",
+        "testMicrosvc_net"
+      ]
+    },
     "testMicrosvc_web": {
       "command": [
-        "npm"
+        "npm",
         "start"
       ],
+      "depends_on": [
+        "testMicrosvc_redis"
+      ],
       "image": "node:4",
+      "links": [
+        "testMicrosvc_redis:redis"
+      ],
       "networks": [
         "default",
         "testMicrosvc_net"
@@ -20,16 +32,29 @@
         "1337:1337"
       ],
       "volumes": [
-        ".:/app"
+        "test/resources/working-cache-dir/testMicrosvc:/app"
       ],
       "working_dir": "/app"
     },
+    "feature-flags_dynamo": {
+      "image": "dynamo",
+      "networks": [
+        "default",
+        "feature-flags_net"
+      ]
+    },
     "feature-flags_web": {
       "command": [
-        "npm"
+        "npm",
         "start"
       ],
+      "depends_on": [
+        "feature-flags_dynamo"
+      ],
       "image": "node:4",
+      "links": [
+        "feature-flags_dynamo:dynamo"
+      ],
       "networks": [
         "default",
         "feature-flags_net"
@@ -38,13 +63,13 @@
         "1337:1337"
       ],
       "volumes": [
-        ".:/app"
+        "test/resources/working-cache-dir/feature-flags:/app"
       ],
       "working_dir": "/app"
     },
     "service-registry_web": {
       "command": [
-        "npm"
+        "npm",
         "start"
       ],
       "image": "node:4",
@@ -56,7 +81,7 @@
         "1337:1337"
       ],
       "volumes": [
-        ".:/app"
+        "test/resources/working-cache-dir/service-registry:/app"
       ],
       "working_dir": "/app"
     }

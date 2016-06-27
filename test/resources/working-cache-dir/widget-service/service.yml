@@ -12,6 +12,10 @@ services:
       - .:/app
     working_dir: /app
     command: [npm, start]
+    depends_on:
+      - mysql
+  mysql:
+    image: mysql
 
 dependents:
   - service-registry

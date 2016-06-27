@@ -12,6 +12,10 @@ services:
       - .:/app
     working_dir: /app
     command: [npm, start]
+    depends_on:
+      - redis
+  redis:
+    image: redis
 
 dependents:
   - feature-flags

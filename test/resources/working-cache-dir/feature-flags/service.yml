@@ -12,6 +12,10 @@ services:
       - .:/app
     working_dir: /app
     command: [npm, start]
+    depends_on:
+      - dynamo
+  dynamo:
+    image: dynamo
 
 dependents:
   - service-registry

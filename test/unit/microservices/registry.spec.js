@@ -13,12 +13,14 @@ const EXPECTED_REGISTRY_MAP = require('../../resources/expected-registry-map')
 
 const ENTITLEMENTS_OVERRIDE_PATH = path.join(__dirname, '../../resources/testMicrosvc-override')
 const NOTASERVICE_SERVICE_PATH = path.join(__dirname, '../../resources/notaservice')
+const PROJECT_ROOT_DIR = path.join(__dirname, '../../../')
 
 const EXPECTED_SERVICE_YML = {
   namespace: 'ns',
   public: [
     'web',
   ],
+  path: 'test/resources/cache-dir/feature-flags',
   services: {
     web: {
       command: [
@@ -38,6 +40,7 @@ const EXPECTED_SERVICE_YML = {
 }
 
 const EXPECTED_ENT_SERVICE_YML = Object.assign({}, EXPECTED_SERVICE_YML, {
+  path: 'test/resources/cache-dir/testMicrosvc',
   dependents: [
     'feature-flags',
   ],
@@ -85,6 +88,8 @@ describe('MicroserviceRegistry', function () {
   describe('#resolve()', function () {
     it('should load a service\'s YML file after cloning/pulling', function * () {
       const contents = yield registry.resolve('testMicrosvc')
+      contents.path = cleanPath(contents.path)
+
       expect(contents).to.deep.equal(EXPECTED_ENT_SERVICE_YML)
     })
 
@@ -102,10 +107,15 @@ describe('MicroserviceRegistry', function () {
 
     it('should load mock services correctly', function * () {
       const testMicrosvcMock = yield registry.resolve('testMicrosvc-mocks')
+      testMicrosvcMock.path = cleanPath(testMicrosvcMock.path)
+
       expect(testMicrosvcMock).to.deep.equal(EXPECTED_ENT_SERVICE_YML)
 
       const featureFlagsMock = yield registry.resolve('feature-flags-mocks')
+      featureFlagsMock.path = cleanPath(featureFlagsMock.path)
+
       expect(featureFlagsMock).to.deep.equal(Object.assign({}, EXPECTED_SERVICE_YML, {
+        path: 'test/resources/cache-dir/feature-flags-mocks',
         namespace: 'ff',
       }))
     })
@@ -114,8 +124,11 @@ describe('MicroserviceRegistry', function () {
       registry.link(ENTITLEMENTS_OVERRIDE_PATH)
 
       const testMicrosvc = yield registry.resolve('testMicrosvc')
+      testMicrosvc.path = cleanPath(testMicrosvc.path)
+
       expect(testMicrosvc).to.deep.equal(Object.assign({}, EXPECTED_ENT_SERVICE_YML, {
         namespace: 'testMicrosvc',
+        path: 'test/resources/testMicrosvc-override',
         dependents: [
           'feature-flags',
           'service-registry',
@@ -176,3 +189,7 @@ describe('MicroserviceRegistry', function () {
     })
   })
 })
+
+function cleanPath(pathToClean) {
+  return pathToClean.replace(PROJECT_ROOT_DIR, '')
+}
