@@ -1,0 +1,26 @@
+{
+  "testMicrosvc": {
+    "git": "git@github.com:myapp/testMicrosvc",
+    "mocks": {
+      "root": "mocks"
+    }
+  },
+  "feature-flags": {
+    "git": "git@github.com:myapp/feature-flags",
+    "mocks": {
+      "root": "mocks"
+    }
+  },
+  "service-registry": {
+    "git": "git@github.com:myapp/service-registry",
+    "mocks": {
+      "root": "mocks"
+    }
+  },
+  "widget-service": {
+    "git": "git@github.com:myapp/widget-service",
+    "mocks": {
+      "root": "mocks"
+    }
+  }
+}

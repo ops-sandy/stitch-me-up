@@ -1,0 +1,14 @@
+namespace: notaservice
+
+public:
+  - web
+
+services:
+  web:
+    image: node:4
+    ports:
+      - "1337:1337"
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: [npm, start]

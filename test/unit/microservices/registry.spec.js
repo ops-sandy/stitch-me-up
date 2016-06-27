@@ -6,11 +6,13 @@ const expect = require('chai').expect
 const MicroserviceRegistry = require('../../../lib/microservice/registry')
 
 const TEST_CACHE_DIR = path.join(__dirname, '../../resources/cache-dir')
-const WORKING_CACHE_DIR = path.join(__dirname, '../../resources/working-cache-dir') // TODO
+const WORKING_CACHE_DIR = path.join(__dirname, '../../resources/working-cache-dir')
 const REGISTRY_SPEC = require('../../resources/registry')
+const WORKING_REGISTRY_SPEC = require('../../resources/working-registry')
 const EXPECTED_REGISTRY_MAP = require('../../resources/expected-registry-map')
-const FEATURE_FLAGS_DIR = path.join(__dirname,
-  '../../resources/cache-dir/feature-flags-mocks/feature-flags')
+
+const ENTITLEMENTS_OVERRIDE_PATH = path.join(__dirname, '../../resources/testMicrosvc-override')
+const NOTASERVICE_SERVICE_PATH = path.join(__dirname, '../../resources/notaservice')
 
 const EXPECTED_SERVICE_YML = {
   namespace: 'ns',
@@ -34,6 +36,12 @@ const EXPECTED_SERVICE_YML = {
     },
   },
 }
+
+const EXPECTED_ENT_SERVICE_YML = Object.assign({}, EXPECTED_SERVICE_YML, {
+  dependents: [
+    'feature-flags',
+  ],
+})
 
 describe('MicroserviceRegistry', function () {
   before(function () {
@@ -77,7 +85,7 @@ describe('MicroserviceRegistry', function () {
   describe('#resolve()', function () {
     it('should load a service\'s YML file after cloning/pulling', function * () {
       const contents = yield registry.resolve('testMicrosvc')
-      expect(contents).to.deep.equal(EXPECTED_SERVICE_YML)
+      expect(contents).to.deep.equal(EXPECTED_ENT_SERVICE_YML)
     })
 
     it('should fail to load the service YML if the YML is an invalid service spec', function * () {
@@ -94,7 +102,7 @@ describe('MicroserviceRegistry', function () {
 
     it('should load mock services correctly', function * () {
       const testMicrosvcMock = yield registry.resolve('testMicrosvc-mocks')
-      expect(testMicrosvcMock).to.deep.equal(EXPECTED_SERVICE_YML)
+      expect(testMicrosvcMock).to.deep.equal(EXPECTED_ENT_SERVICE_YML)
 
       const featureFlagsMock = yield registry.resolve('feature-flags-mocks')
       expect(featureFlagsMock).to.deep.equal(Object.assign({}, EXPECTED_SERVICE_YML, {
@@ -103,54 +111,68 @@ describe('MicroserviceRegistry', function () {
     })
 
     it('should use the override path if a directory is linked', function * () {
-      registry.link('testMicrosvc', FEATURE_FLAGS_DIR)
+      registry.link(ENTITLEMENTS_OVERRIDE_PATH)
 
       const testMicrosvc = yield registry.resolve('testMicrosvc')
-      expect(testMicrosvc).to.deep.equal(Object.assign({}, EXPECTED_SERVICE_YML, {
-        namespace: 'ff',
+      expect(testMicrosvc).to.deep.equal(Object.assign({}, EXPECTED_ENT_SERVICE_YML, {
+        namespace: 'testMicrosvc',
+        dependents: [
+          'feature-flags',
+          'service-registry',
+        ],
       }))
     })
   })
 
   describe('#link()', function () {
     it('should throw if the requested service does not exist', function () {
-      expect(() => registry.link('notaservice', '/path/to/nowhere')).to.throw(Error,
-        'Unknown service \'notaservice\' requested, make sure it is in the regisry.')
+      expect(() => registry.link(NOTASERVICE_SERVICE_PATH)).to.throw(Error,
+        'Unknown service \'notaservice\' requested, make sure it is in the registry.')
     })
 
     it('should throw if the path to link to does not exist', function () {
-      expect(() => registry.link('testMicrosvc', '/path/to/nowhere')).to.throw(Error,
-        'Attempting to link invalid service directory \'/path/to/nowhere\' to service \'testMicrosvc\'.')
+      expect(() => registry.link('/path/to/nowhere')).to.throw(Error,
+        'Attempting to link invalid service directory \'/path/to/nowhere\'.')
     })
 
     it('should set the override path for the given service', function () {
-      registry.link('testMicrosvc', __dirname)
-      expect(registry.serviceRegistry.testMicrosvc.pathOverride).to.equal(__dirname)
+      registry.link(ENTITLEMENTS_OVERRIDE_PATH)
+      expect(registry.serviceRegistry.testMicrosvc.pathOverride).to.equal(ENTITLEMENTS_OVERRIDE_PATH)
     })
   })
 
   describe('#visitServices()', function () {
     let realRegistry
     beforeEach(function () {
-      realRegistry = new MicroserviceRegistry(REGISTRY_SPEC, new MicroserviceCache(WORKING_CACHE_DIR))
+      realRegistry = new MicroserviceRegistry(WORKING_REGISTRY_SPEC, new MicroserviceCache(WORKING_CACHE_DIR))
     })
 
-    it('should pass each "service to visit"\'s service config to the visitor', function () {
+    it('should pass each "service to visit"\'s service config to the visitor', function * () {
       const visited = []
-      realRegistry.visitServices(['testMicrosvc', 'feature-flags'], (serviceConfig) => {
-        visited.push(serviceConfig.namespace)
-      })
+      yield realRegistry.visitServices(['testMicrosvc', 'feature-flags', 'service-registry'],
+        (serviceConfig, serviceName) => {
+          visited.push([serviceConfig.namespace, serviceName])
+        }
+      )
 
-      expect(visited).to.deep.equal([1])
+      expect(visited).to.deep.equal([
+        ['testMicrosvc', 'testMicrosvc'],
+        ['feature-flags', 'feature-flags'],
+        ['service-registry', 'service-registry'],
+      ])
     })
 
-    it('should pass mocks for dependent services that are not listed in the "services to visit list"', function () {
+    it('should pass mocks for dependent services that are not listed in the "services to visit list"', function * () {
       const visited = []
-      realRegistry.visitServices(['testMicrosvc'], (serviceConfig) => {
-        visited.push(serviceConfig.namespace)
+      yield realRegistry.visitServices(['testMicrosvc'], (serviceConfig, serviceName) => {
+        visited.push([serviceConfig.namespace, serviceName])
       })
 
-      expect(visited).to.deep.equal([2])
+      expect(visited).to.deep.equal([
+        ['testMicrosvc', 'testMicrosvc'],
+        ['feature-flags', 'feature-flags-mocks'],
+        ['service-registry', 'service-registry-mocks'],
+      ])
     })
   })
 })

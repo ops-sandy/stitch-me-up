@@ -1,0 +1,65 @@
+{
+  "TODO": "there should be services that aren't in the public default network",
+  "networks": {
+    "testMicrosvc_net": {},
+    "feature-flags_net": {},
+    "service-registry_net": {}
+  },
+  "services": {
+    "testMicrosvc_web": {
+      "command": [
+        "npm"
+        "start"
+      ],
+      "image": "node:4",
+      "networks": [
+        "default",
+        "testMicrosvc_net"
+      ],
+      "ports": [
+        "1337:1337"
+      ],
+      "volumes": [
+        ".:/app"
+      ],
+      "working_dir": "/app"
+    },
+    "feature-flags_web": {
+      "command": [
+        "npm"
+        "start"
+      ],
+      "image": "node:4",
+      "networks": [
+        "default",
+        "feature-flags_net"
+      ],
+      "ports": [
+        "1337:1337"
+      ],
+      "volumes": [
+        ".:/app"
+      ],
+      "working_dir": "/app"
+    },
+    "service-registry_web": {
+      "command": [
+        "npm"
+        "start"
+      ],
+      "image": "node:4",
+      "networks": [
+        "default",
+        "service-registry_net"
+      ],
+      "ports": [
+        "1337:1337"
+      ],
+      "volumes": [
+        ".:/app"
+      ],
+      "working_dir": "/app"
+    }
+  },
+  "version": "2"
+}
