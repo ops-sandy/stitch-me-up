@@ -12,3 +12,6 @@ services:
       - .:/app
     working_dir: /app
     command: [npm, start]
+
+dependents:
+  - feature-flags

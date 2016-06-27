@@ -6,6 +6,7 @@ const expect = require('chai').expect
 const MicroserviceRegistry = require('../../../lib/microservice/registry')
 
 const TEST_CACHE_DIR = path.join(__dirname, '../../resources/cache-dir')
+const WORKING_CACHE_DIR = path.join(__dirname, '../../resources/working-cache-dir') // TODO
 const REGISTRY_SPEC = require('../../resources/registry')
 const EXPECTED_REGISTRY_MAP = require('../../resources/expected-registry-map')
 const FEATURE_FLAGS_DIR = path.join(__dirname,
@@ -125,6 +126,31 @@ describe('MicroserviceRegistry', function () {
     it('should set the override path for the given service', function () {
       registry.link('testMicrosvc', __dirname)
       expect(registry.serviceRegistry.testMicrosvc.pathOverride).to.equal(__dirname)
+    })
+  })
+
+  describe('#visitServices()', function () {
+    let realRegistry
+    beforeEach(function () {
+      realRegistry = new MicroserviceRegistry(REGISTRY_SPEC, new MicroserviceCache(WORKING_CACHE_DIR))
+    })
+
+    it('should pass each "service to visit"\'s service config to the visitor', function () {
+      const visited = []
+      realRegistry.visitServices(['testMicrosvc', 'feature-flags'], (serviceConfig) => {
+        visited.push(serviceConfig.namespace)
+      })
+
+      expect(visited).to.deep.equal([1])
+    })
+
+    it('should pass mocks for dependent services that are not listed in the "services to visit list"', function () {
+      const visited = []
+      realRegistry.visitServices(['testMicrosvc'], (serviceConfig) => {
+        visited.push(serviceConfig.namespace)
+      })
+
+      expect(visited).to.deep.equal([2])
     })
   })
 })
