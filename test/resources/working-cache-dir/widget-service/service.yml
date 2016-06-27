@@ -1,4 +1,4 @@
-namespace: ns
+namespace: widget-service
 
 public:
   - web
@@ -12,6 +12,12 @@ services:
       - .:/app
     working_dir: /app
     command: [npm, start]
+    depends_on:
+      - mysql
+  mysql:
+    image: mysql
 
 dependents:
+  - service-registry
+  - testMicrosvc
   - feature-flags
