@@ -1,0 +1,17 @@
+{
+  "name": "stitch-me-up-test-microserviced",
+  "version": "1.0.0",
+  "description": "Test microservice for stitch-me-up functional tests.",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node lib/index.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "koa": "^1.2.0",
+    "koa-router": "^5.4.0",
+    "request-promise": "^3.0.0"
+  }
+}

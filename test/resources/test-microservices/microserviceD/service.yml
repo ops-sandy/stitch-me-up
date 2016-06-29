@@ -1,0 +1,20 @@
+namespace: microserviceD
+
+public:
+  - web
+
+services:
+  web:
+    image: node:4
+    volumes:
+      - .:/microserviceD
+    working_dir: /microserviceD
+    environment:
+      - "MICROSERVICEC_ENDPOINT=http://microserviceC"
+    command: [npm, start]
+
+dependencies:
+  - microserviceC
+
+setup:
+  - npm install
