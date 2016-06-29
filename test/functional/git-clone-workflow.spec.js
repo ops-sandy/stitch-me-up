@@ -22,6 +22,8 @@ describe('git clone workflow', function () {
   this.timeout(120 * 1000)
   this.bail(true)
 
+  const processEnv = Object.assign({}, process.env, { STITCH_CACHE_DIR: TEST_CACHE_DIR })
+
   before(function * () {
     try {
       yield exec(`rm -r "${TEST_CACHE_DIR}"`)
@@ -29,18 +31,20 @@ describe('git clone workflow', function () {
       // ignore
     }
 
-    expect(fsUtils.isDir(TEST_CACHE_DIR)).to.be.true
+    expect(fsUtils.isDir(TEST_CACHE_DIR)).to.be.false
   })
 
   let processInfo
   after(function () {
-    processInfo.process.kill()
+    if (processInfo) {
+      processInfo.process.kill()
+    }
   })
 
-  it('should clone new repositories in the cache dir & use them in the final docker-compose', function * () {
+  it.only('should clone new repositories in the cache dir & use them in the final docker-compose', function * () {
     const cmd = `${STITCH_BIN} --with=microserviceA,microserviceB --with microserviceC --with=microserviceD `
-      + `--registry=${launchUtils.REGSITRY_URL}`
-    processInfo = yield launchUtils.launch(cmd, { cwd: ROOT_MICROSERVICE_DIR })
+      + `--registry=${launchUtils.REGISTRY_URL}`
+    processInfo = yield launchUtils.launch(cmd, { cwd: ROOT_MICROSERVICE_DIR, env: processEnv })
 
     const apiResponses = yield launchUtils.queryApis(processInfo.urls)
     expect(apiResponses).to.deep.equal({
@@ -52,8 +56,8 @@ describe('git clone workflow', function () {
   it('should pull cloned repos if they already exist before using them in the final docker-compose', function * () {
     yield MICROSERVICES_TO_TEST.map((serviceName) => checkoutOldCommit(serviceName))
 
-    const cmd = `${STITCH_BIN} --with=microserviceA,microserviceC --registry=${launchUtils.REGSITRY_URL}`
-    processInfo = yield launchUtils.launch(cmd, { cwd: ROOT_MICROSERVICE_DIR })
+    const cmd = `${STITCH_BIN} --with=microserviceA,microserviceC --registry=${launchUtils.REGISTRY_URL}`
+    processInfo = yield launchUtils.launch(cmd, { cwd: ROOT_MICROSERVICE_DIR, env: processEnv  })
 
     for (let i = 0; i != MICROSERVICES_TO_TEST.length; ++i) {
       yield checkRepoAtLatestCommit(MICROSERVICES_TO_TEST[i])

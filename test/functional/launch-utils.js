@@ -6,6 +6,7 @@ const exec = require('child_process').exec
 const request = require('request-promise')
 
 const FINISHED_LAUNCHING_REGEX = /(microservice[a-zA-Z]+) listening on/g
+const MICROSERVICE_COUNT = 4
 
 module.exports = {
   REGISTRY_URL: 'https://raw.githubusercontent.com/diosmosis/stitch-me-up-test-registry/master/services.json',
@@ -29,7 +30,7 @@ function queryApis(urls) {
 function launch(cmd, options) {
   return co(function* launchImpl() {
     const debugFile = fs.createWriteStream('stitch-debug.log', { flags: 'a' })
-    debugFile.write(`*** starting ${cmd} ***`)
+    debugFile.write(`*** starting ${cmd} ***\n`)
 
     const urls = {}
 
@@ -47,7 +48,9 @@ function launch(cmd, options) {
           const microservice = regexResult[1]
 
           const urlMatch = allStdout.match(new RegExp(`Launching ${microservice} at (.*)$`, 'gm'))
-          urls[urlMatch[1]] = urlMatch[2]
+          if (urlMatch) {
+            urls[urlMatch[1]] = urlMatch[2]
+          }
         }
 
         debugFile.write(data)
