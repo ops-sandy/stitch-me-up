@@ -9,7 +9,6 @@
     "testMicrosvc_redis": {
       "image": "redis",
       "networks": [
-        "default",
         "testMicrosvc_net"
       ]
     },
@@ -26,11 +25,11 @@
         "testMicrosvc_redis:redis"
       ],
       "networks": [
-        "default",
-        "testMicrosvc_net"
+        "testMicrosvc_net",
+        "default"
       ],
       "ports": [
-        "1337:1337"
+        "3000:3000"
       ],
       "volumes": [
         "test/resources/working-cache-dir/testMicrosvc:/app"
@@ -40,7 +39,6 @@
     "feature-flags_dynamo": {
       "image": "dynamo",
       "networks": [
-        "default",
         "feature-flags_net"
       ]
     },
@@ -57,11 +55,11 @@
         "feature-flags_dynamo:dynamo"
       ],
       "networks": [
-        "default",
-        "feature-flags_net"
+        "feature-flags_net",
+        "default"
       ],
       "ports": [
-        "1337:1337"
+        "3001:3000"
       ],
       "volumes": [
         "test/resources/working-cache-dir/feature-flags:/app"
@@ -75,11 +73,11 @@
       ],
       "image": "node:4",
       "networks": [
-        "default",
-        "service-registry_net"
+        "service-registry_net",
+        "default"
       ],
       "ports": [
-        "1337:1337"
+        "3002:3000"
       ],
       "volumes": [
         "test/resources/working-cache-dir/service-registry:/app"
@@ -89,7 +87,6 @@
     "widget-service_mysql": {
       "image": "mysql",
       "networks": [
-        "default",
         "widget-service_net"
       ]
     },
@@ -106,11 +103,11 @@
         "widget-service_mysql:mysql"
       ],
       "networks": [
-        "default",
-        "widget-service_net"
+        "widget-service_net",
+        "default"
       ],
       "ports": [
-        "1337:1337"
+        "3003:3000"
       ],
       "volumes": [
         "test/resources/working-cache-dir/widget-service:/app"

@@ -139,8 +139,8 @@ describe('MicroserviceSpecificationValidator', function () {
 
     it('should throw if the public section has an entry that doesn\'t exist in the services section', function () {
       spec.public = [
-        'web',
-        'queue',
+        'web:4000',
+        'queue:5000',
       ]
 
       expect(() => validator.validate(spec)).to.throw(Error,

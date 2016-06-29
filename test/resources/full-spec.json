@@ -1,8 +1,8 @@
 {
   "namespace": "example",
   "public": [
-    "web",
-    "dynamodb"
+    "web:3000",
+    "dynamodb:8000"
   ],
   "services": {
     "web": {

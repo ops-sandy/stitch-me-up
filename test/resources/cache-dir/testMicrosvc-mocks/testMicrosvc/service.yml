@@ -1,13 +1,11 @@
 namespace: ns
 
 public:
-  - web
+  - web:3000
 
 services:
   web:
     image: node:4
-    ports:
-      - "1337:1337"
     volumes:
       - .:/app
     working_dir: /app
