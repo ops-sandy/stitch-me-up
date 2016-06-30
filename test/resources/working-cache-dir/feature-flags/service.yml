@@ -15,5 +15,5 @@ services:
   dynamo:
     image: dynamo
 
-dependents:
+dependencies:
   - service-registry

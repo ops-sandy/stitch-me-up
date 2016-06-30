@@ -38,7 +38,7 @@ const EXPECTED_SERVICE_YML = {
 
 const EXPECTED_ENT_SERVICE_YML = Object.assign({}, EXPECTED_SERVICE_YML, {
   path: 'test/resources/cache-dir/testMicrosvc',
-  dependents: [
+  dependencies: [
     'feature-flags',
   ],
 })
@@ -86,6 +86,8 @@ describe('MicroserviceRegistry', function () {
     it('should load a service\'s YML file after cloning/pulling', function * () {
       const contents = yield registry.resolve('testMicrosvc', ['testMicrosvc'])
       contents.path = cleanPath(contents.path)
+      delete contents.root
+      // TODO: this test code is getting pretty dirty, will need a clean up soon
 
       expect(contents).to.deep.equal(EXPECTED_ENT_SERVICE_YML)
     })
@@ -105,15 +107,17 @@ describe('MicroserviceRegistry', function () {
     it('should load mock services correctly', function * () {
       const testMicrosvcMock = yield registry.resolve('testMicrosvc', [])
       testMicrosvcMock.path = cleanPath(testMicrosvcMock.path)
+      delete testMicrosvcMock.root
 
-      let expected = Object.assign({}, EXPECTED_ENT_SERVICE_YML)
-      delete expected.dependents
-      expected.path = expected.path + '-mocks'
+      const expected = Object.assign({}, EXPECTED_ENT_SERVICE_YML)
+      delete expected.dependencies
+      expected.path = `${expected.path}-mocks`
 
       expect(testMicrosvcMock).to.deep.equal(expected)
 
       const featureFlagsMock = yield registry.resolve('feature-flags')
       featureFlagsMock.path = cleanPath(featureFlagsMock.path)
+      delete featureFlagsMock.root
 
       expect(featureFlagsMock).to.deep.equal(Object.assign({}, EXPECTED_SERVICE_YML, {
         path: 'test/resources/cache-dir/feature-flags-mocks',
@@ -122,15 +126,18 @@ describe('MicroserviceRegistry', function () {
     })
 
     it('should use the override path if a directory is linked', function * () {
-      registry.link(ENTITLEMENTS_OVERRIDE_PATH)
+      const realRegistry = new MicroserviceRegistry(WORKING_REGISTRY_SPEC, new MicroserviceCache(WORKING_CACHE_DIR))
 
-      const testMicrosvc = yield registry.resolve('testMicrosvc', ['testMicrosvc'])
+      realRegistry.link(ENTITLEMENTS_OVERRIDE_PATH)
+
+      const testMicrosvc = yield realRegistry.resolve('testMicrosvc', ['testMicrosvc'])
       testMicrosvc.path = cleanPath(testMicrosvc.path)
+      delete testMicrosvc.root
 
       expect(testMicrosvc).to.deep.equal(Object.assign({}, EXPECTED_ENT_SERVICE_YML, {
         namespace: 'testMicrosvc',
         path: 'test/resources/testMicrosvc-override',
-        dependents: [
+        dependencies: [
           'feature-flags',
           'service-registry',
         ],
@@ -139,19 +146,24 @@ describe('MicroserviceRegistry', function () {
   })
 
   describe('#link()', function () {
+    let realRegistry
+    beforeEach(function () {
+      realRegistry = new MicroserviceRegistry(WORKING_REGISTRY_SPEC, new MicroserviceCache(WORKING_CACHE_DIR))
+    })
+
     it('should throw if the requested service does not exist', function () {
-      expect(() => registry.link(NOTASERVICE_SERVICE_PATH)).to.throw(Error,
+      expect(() => realRegistry.link(NOTASERVICE_SERVICE_PATH)).to.throw(Error,
         'Unknown service \'notaservice\' requested, make sure it is in the registry.')
     })
 
     it('should throw if the path to link to does not exist', function () {
-      expect(() => registry.link('/path/to/nowhere')).to.throw(Error,
+      expect(() => realRegistry.link('/path/to/nowhere')).to.throw(Error,
         'Attempting to link invalid service directory \'/path/to/nowhere\'.')
     })
 
     it('should set the override path for the given service', function () {
-      registry.link(ENTITLEMENTS_OVERRIDE_PATH)
-      expect(registry.serviceRegistry.testMicrosvc.pathOverride).to.equal(ENTITLEMENTS_OVERRIDE_PATH)
+      realRegistry.link(ENTITLEMENTS_OVERRIDE_PATH)
+      expect(realRegistry.serviceRegistry.testMicrosvc.pathOverride).to.equal(ENTITLEMENTS_OVERRIDE_PATH)
     })
   })
 
@@ -179,7 +191,7 @@ describe('MicroserviceRegistry', function () {
     it('should pass mocks for dependent services that are not listed in the "services to visit list"', function * () {
       const visited = []
       yield realRegistry.visitServices(['testMicrosvc'], (serviceConfig, serviceName) => {
-        visited.push([serviceName, serviceConfig.dependents || []]) // check against dependents since mocks have none
+        visited.push([serviceName, serviceConfig.dependencies || []]) // check against dependents since mocks have none
       })
 
       expect(visited).to.deep.equal([

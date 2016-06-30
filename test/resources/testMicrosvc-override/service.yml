@@ -11,6 +11,6 @@ services:
     working_dir: /app
     command: [npm, start]
 
-dependents:
+dependencies:
   - feature-flags
   - service-registry

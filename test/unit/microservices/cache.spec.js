@@ -69,6 +69,10 @@ describe('MicroserviceCache', function () {
 
       expect(commands).to.deep.equal([
         [
+          'git checkout master',
+          '/test/resources/test-cache-dir/testMicrosvc',
+        ],
+        [
           'git pull origin master',
           '/test/resources/test-cache-dir/testMicrosvc',
         ],

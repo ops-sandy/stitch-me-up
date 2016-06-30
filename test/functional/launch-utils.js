@@ -13,11 +13,11 @@ const MICROSERVICE_COUNT = 5
 module.exports = {
   REGISTRY_URL: 'https://raw.githubusercontent.com/diosmosis/stitch-me-up-test-registry/master/services.json',
 
-  queryApis: queryApis,
+  queryApis,
 
-  launch: launch,
+  launch,
 
-  checkApiResponsesMatchExpected: checkApiResponsesMatchExpected,
+  checkApiResponsesMatchExpected,
 }
 
 function queryApis(urls) {
@@ -31,14 +31,16 @@ function queryApis(urls) {
   }
 }
 
+const debugFile = fs.createWriteStream('stitch-debug.log', { flags: 'a' })
+
 function launch(cmd, options) {
   return co(function* launchImpl() {
-    const debugFile = fs.createWriteStream('stitch-debug.log', { flags: 'a' })
     debugFile.write(`*** starting ${cmd} ***\n`)
 
     const urls = {}
 
     yield new Promise((resolve, reject) => {
+      let interval = null
       let resolved = false
 
       const process = exec(cmd, options)
@@ -55,16 +57,17 @@ function launch(cmd, options) {
 
       process.on('exit', (code) => {
         if (resolved) {
-          return;
+          return
         }
 
         clearInterval(interval)
-        resolved = true;
+        resolved = true
         reject(new Error(`stitch failed w/ error code ${code}`))
       })
 
-      const interval = setInterval(function () {
+      interval = setInterval(function () {
         let regexResult
+        // eslint-disable-next-line no-cond-assign
         while ((regexResult = FINISHED_LAUNCHING_REGEX.exec(allStdout)) !== null) {
           const microservice = regexResult[1]
 

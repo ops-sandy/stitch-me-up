@@ -79,7 +79,7 @@
         "3002:3000"
       ],
       "volumes": [
-        "test/resources/working-cache-dir/service-registry-mocks:/app"
+        "test/resources/working-cache-dir/service-registry-mocks/mocks:/app"
       ],
       "working_dir": "/app"
     }

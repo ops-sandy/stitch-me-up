@@ -42,7 +42,7 @@
     "js-yaml": "^3.6.1",
     "lodash": "^4.13.1",
     "minimist": "^1.2.0",
-    "passthru": "^0.4.0",
+    "passthru": "git+https://github.com/diosmosis/node-passthru.git#argv-split",
     "request-promise": "^3.0.0",
     "valid-url": "^1.0.9"
   }
