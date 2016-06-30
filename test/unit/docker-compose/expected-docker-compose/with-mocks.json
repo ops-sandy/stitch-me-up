@@ -11,7 +11,7 @@
         "testMicrosvc_net"
       ]
     },
-    "testMicrosvc_web": {
+    "testmicrosvc": {
       "command": [
         "npm",
         "start"
@@ -41,7 +41,7 @@
         "feature-flags_net"
       ]
     },
-    "feature-flags_web": {
+    "feature-flags": {
       "command": [
         "npm",
         "start"
@@ -58,14 +58,14 @@
         "default"
       ],
       "ports": [
-        "3002:3000"
+        "3001:3000"
       ],
       "volumes": [
         "test/resources/working-cache-dir/feature-flags:/app"
       ],
       "working_dir": "/app"
     },
-    "service-registry_web": {
+    "service-registry": {
       "command": [
         "npm",
         "start"
@@ -76,10 +76,10 @@
         "default"
       ],
       "ports": [
-        "3001:3000"
+        "3002:3000"
       ],
       "volumes": [
-        "test/resources/working-cache-dir/service-registry:/app"
+        "test/resources/working-cache-dir/service-registry-mocks:/app"
       ],
       "working_dir": "/app"
     }

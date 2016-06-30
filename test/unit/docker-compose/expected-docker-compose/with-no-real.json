@@ -11,7 +11,7 @@
         "testMicrosvc_net"
       ]
     },
-    "testMicrosvc_web": {
+    "testmicrosvc": {
       "command": [
         "npm",
         "start"
@@ -35,24 +35,12 @@
       ],
       "working_dir": "/app"
     },
-    "feature-flags_dynamo": {
-      "image": "dynamo",
-      "networks": [
-        "feature-flags_net"
-      ]
-    },
-    "feature-flags_web": {
+    "feature-flags": {
       "command": [
         "npm",
         "start"
       ],
-      "depends_on": [
-        "feature-flags_dynamo"
-      ],
       "image": "node:4",
-      "links": [
-        "feature-flags_dynamo:dynamo"
-      ],
       "networks": [
         "feature-flags_net",
         "default"
@@ -61,11 +49,11 @@
         "3001:3000"
       ],
       "volumes": [
-        "test/resources/working-cache-dir/feature-flags:/app"
+        "test/resources/working-cache-dir/feature-flags-mocks:/app"
       ],
       "working_dir": "/app"
     },
-    "service-registry_web": {
+    "service-registry": {
       "command": [
         "npm",
         "start"
@@ -79,7 +67,7 @@
         "3002:3000"
       ],
       "volumes": [
-        "test/resources/working-cache-dir/service-registry:/app"
+        "test/resources/working-cache-dir/service-registry-mocks:/app"
       ],
       "working_dir": "/app"
     }

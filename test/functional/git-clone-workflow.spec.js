@@ -47,7 +47,7 @@ describe('git clone workflow', function () {
     yield exec(`docker kill $(docker ps -f name=microservice -q)`)
   })
 
-  it('should clone new repositories in the cache dir & use them in the final docker-compose', function * () {
+  it.only('should clone new repositories in the cache dir & use them in the final docker-compose', function * () {
     const cmd = `${STITCH_BIN} --with=microserviceA,microserviceB --with microserviceC --with=microserviceD `
       + `--registry=${launchUtils.REGISTRY_URL}`
     processInfo = yield launchUtils.launch(cmd, { cwd: ROOT_MICROSERVICE_DIR, env: processEnv })
@@ -57,8 +57,8 @@ describe('git clone workflow', function () {
   })
 
   // note: also tests mocks
-  it.only('should pull cloned repos if they already exist before using them in the final docker-compose', function * () {
-    yield MICROSERVICES_TO_TEST.map((serviceName) => checkoutOldCommit(serviceName))
+  it('should pull cloned repos if they already exist before using them in the final docker-compose', function * () {
+    yield MICROSERVICES_TO_TEST.map(checkoutOldCommit)
 
     const cmd = `${STITCH_BIN} --with=microserviceA,microserviceC --registry=${launchUtils.REGISTRY_URL}`
     processInfo = yield launchUtils.launch(cmd, { cwd: ROOT_MICROSERVICE_DIR, env: processEnv  })

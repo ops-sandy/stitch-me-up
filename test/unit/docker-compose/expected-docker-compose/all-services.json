@@ -12,7 +12,7 @@
         "testMicrosvc_net"
       ]
     },
-    "testMicrosvc_web": {
+    "testmicrosvc": {
       "command": [
         "npm",
         "start"
@@ -42,7 +42,7 @@
         "feature-flags_net"
       ]
     },
-    "feature-flags_web": {
+    "feature-flags": {
       "command": [
         "npm",
         "start"
@@ -66,7 +66,7 @@
       ],
       "working_dir": "/app"
     },
-    "service-registry_web": {
+    "service-registry": {
       "command": [
         "npm",
         "start"
@@ -90,7 +90,7 @@
         "widget-service_net"
       ]
     },
-    "widget-service_web": {
+    "widget-service": {
       "command": [
         "npm",
         "start"
