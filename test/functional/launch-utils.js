@@ -2,11 +2,13 @@
 
 const co = require('co')
 const fs = require('fs')
+const path = require('path')
 const exec = require('child_process').exec
 const request = require('request-promise')
+const expect = require('chai').expect
 
 const FINISHED_LAUNCHING_REGEX = /(microservice[a-zA-Z]+) listening on/g
-const MICROSERVICE_COUNT = 4
+const MICROSERVICE_COUNT = 5
 
 module.exports = {
   REGISTRY_URL: 'https://raw.githubusercontent.com/diosmosis/stitch-me-up-test-registry/master/services.json',
@@ -14,6 +16,8 @@ module.exports = {
   queryApis: queryApis,
 
   launch: launch,
+
+  checkApiResponsesMatchExpected: checkApiResponsesMatchExpected,
 }
 
 function queryApis(urls) {
@@ -42,22 +46,7 @@ function launch(cmd, options) {
       let allStdout = ''
       process.stdout.on('data', (data) => {
         allStdout += data.toString()
-
-        let regexResult
-        while ((regexResult = FINISHED_LAUNCHING_REGEX.exec(allStdout)) !== null) {
-          const microservice = regexResult[1]
-
-          const urlMatch = allStdout.match(new RegExp(`Launching ${microservice} at (.*)$`, 'gm'))
-          if (urlMatch) {
-            urls[urlMatch[1]] = urlMatch[2]
-          }
-        }
-
         debugFile.write(data)
-
-        if (Object.keys(urls).length === MICROSERVICE_COUNT) {
-          finish()
-        }
       })
 
       process.stderr.on('data', (data) => {
@@ -65,16 +54,40 @@ function launch(cmd, options) {
       })
 
       process.on('exit', (code) => {
+        if (resolved) {
+          return;
+        }
+
+        clearInterval(interval)
+        resolved = true;
         reject(new Error(`stitch failed w/ error code ${code}`))
       })
+
+      const interval = setInterval(function () {
+        let regexResult
+        while ((regexResult = FINISHED_LAUNCHING_REGEX.exec(allStdout)) !== null) {
+          const microservice = regexResult[1]
+
+          const urlMatch = new RegExp(`Launching ${microservice} at (.*)$`, 'gm').exec(allStdout)
+          if (urlMatch) {
+            urls[microservice] = urlMatch[1]
+          }
+        }
+
+        if (Object.keys(urls).length === MICROSERVICE_COUNT) {
+          finish()
+        }
+      }, 5000)
 
       function finish() {
         if (resolved) {
           return
         }
 
+        clearInterval(interval)
         resolved = true
-        resolve()
+
+        setTimeout(resolve, 10000)
       }
     })
 
@@ -83,4 +96,13 @@ function launch(cmd, options) {
       urls,
     }
   })
+}
+
+function checkApiResponsesMatchExpected(apiResponses, testName) {
+  const processedPath = path.join(__dirname, 'responses', `${testName}.processed.json`)
+  const expectedPath = path.join(__dirname, 'responses', `${testName}.expected.json`)
+
+  fs.writeFileSync(processedPath, JSON.stringify(apiResponses))
+
+  expect(apiResponses).to.deep.equal(require(expectedPath))
 }

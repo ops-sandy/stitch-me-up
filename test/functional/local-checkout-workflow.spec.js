@@ -29,13 +29,24 @@ describe('local-checkout-workflow', function () {
     expect(fsUtils.isDir(TEST_CACHE_DIR)).to.be.false
   })
 
+    let processInfo
+    afterEach(function * () {
+      if (processInfo) {
+        try {
+          processInfo.process.kill()
+        } catch (err) {
+          console.log('Failed to kill process:', err)
+        }
+      }
+
+      yield exec(`docker kill $(docker ps -f name=microservice -q)`)
+    })
+
   it('should link to local code if --link is used, but clone other repos', function * () {
     const cmd = `${STITCH_BIN} --with=microserviceA --link "${LOCAL_MICROSERVICE_D}"`
-    const urls = yield launchUtils.launch(cmd, { cwd: ROOT_MICROSERVICE_DIR, env: processEnv })
+    processInfo = yield launchUtils.launch(cmd, { cwd: ROOT_MICROSERVICE_DIR, env: processEnv })
 
-    const apiResponses = yield launchUtils.queryApis(urls)
-    expect(apiResponses).to.deep.equal({
-      j: 2
-    })
+    const apiResponses = yield launchUtils.queryApis(processInfo.urls)
+    launchUtils.checkApiResponsesMatchExpected(apiResponses, 'links')
   })
 })

@@ -19,7 +19,7 @@ const MICROSERVICES_TO_TEST = [
 ]
 
 describe('git clone workflow', function () {
-  this.timeout(120 * 1000)
+  this.timeout(180 * 1000)
   this.bail(true)
 
   const processEnv = Object.assign({}, process.env, { STITCH_CACHE_DIR: TEST_CACHE_DIR })
@@ -35,25 +35,29 @@ describe('git clone workflow', function () {
   })
 
   let processInfo
-  after(function () {
+  afterEach(function * () {
     if (processInfo) {
-      processInfo.process.kill()
+      try {
+        processInfo.process.kill()
+      } catch (err) {
+        console.log('Failed to kill process:', err)
+      }
     }
+
+    yield exec(`docker kill $(docker ps -f name=microservice -q)`)
   })
 
-  it.only('should clone new repositories in the cache dir & use them in the final docker-compose', function * () {
+  it('should clone new repositories in the cache dir & use them in the final docker-compose', function * () {
     const cmd = `${STITCH_BIN} --with=microserviceA,microserviceB --with microserviceC --with=microserviceD `
       + `--registry=${launchUtils.REGISTRY_URL}`
     processInfo = yield launchUtils.launch(cmd, { cwd: ROOT_MICROSERVICE_DIR, env: processEnv })
 
     const apiResponses = yield launchUtils.queryApis(processInfo.urls)
-    expect(apiResponses).to.deep.equal({
-      j: 2
-    })
+    launchUtils.checkApiResponsesMatchExpected(apiResponses, 'clone-all')
   })
 
   // note: also tests mocks
-  it('should pull cloned repos if they already exist before using them in the final docker-compose', function * () {
+  it.only('should pull cloned repos if they already exist before using them in the final docker-compose', function * () {
     yield MICROSERVICES_TO_TEST.map((serviceName) => checkoutOldCommit(serviceName))
 
     const cmd = `${STITCH_BIN} --with=microserviceA,microserviceC --registry=${launchUtils.REGISTRY_URL}`
@@ -63,10 +67,8 @@ describe('git clone workflow', function () {
       yield checkRepoAtLatestCommit(MICROSERVICES_TO_TEST[i])
     }
 
-    const apiResponses = yield launchUtils.queryApis(processInfo)
-    expect(apiResponses).to.deep.equal({
-      j: 2
-    })
+    const apiResponses = yield launchUtils.queryApis(processInfo.urls)
+    launchUtils.checkApiResponsesMatchExpected(apiResponses, 'pull-with-mocks')
   })
 
   function checkoutOldCommit(serviceName) {

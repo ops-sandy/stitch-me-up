@@ -1,0 +1,8 @@
+{
+  "microserviceA/service-a": "(service-a-response,(service-b-response,(service-c-response,(service-d-response,(service-c2-response)))),(service-c-response,(service-d-response,(service-c2-response))))",
+  "microserviceB/service-b": "(service-b-response,(service-c-response,(service-d-response,(service-c2-response))))",
+  "microserviceC/service-c": "(service-c-response,(service-d-response,(service-c2-response)))",
+  "microserviceC/service-c2": "(service-c2-response)",
+  "microserviceD/service-d": "(service-d-response,(service-c2-response))",
+  "microserviceRoot/root": "(local-service-d,(service-a-response,(service-b-response,(service-c-response,(service-d-response,(service-c2-response)))),(service-c-response,(service-d-response,(service-c2-response)))),(service-d-response,(service-c2-response)))"
+}
