@@ -1,7 +1,7 @@
 namespace: microserviceD
 
 public:
-  - web
+  - web:3000
 
 services:
   web:
