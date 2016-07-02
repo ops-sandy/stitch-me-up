@@ -8,5 +8,8 @@ sudo: required
 services:
   - docker
 
+install:
+  - docker pull node:4
+
 after_script:
   - cat stitch-debug.log
