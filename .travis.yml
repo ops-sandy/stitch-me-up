@@ -13,7 +13,7 @@ services:
 
 install:
   - sudo apt-get update
-  - sudo apt-get install docker-engine -y
+  - DEBIAN_FRONTEND=noninteractive sudo apt-get install docker-engine -q -y
   - curl -L https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
 
   - docker pull node:4
