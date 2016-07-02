@@ -5,10 +5,17 @@ node_js:
 
 sudo: required
 
+env:
+  DOCKER_COMPOSE_VERSION: 1.8.0-rc1
+
 services:
   - docker
 
 install:
+  - sudo apt-get update
+  - sudo apt-get install docker-engine
+  - curl -L https://github.com/docker/compose/releases/download/$DOCKER_COMPOSE_VERSION/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+
   - docker pull node:4
   - npm install
 
