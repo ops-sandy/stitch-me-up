@@ -10,6 +10,7 @@ services:
 
 install:
   - docker pull node:4
+  - npm install
 
 after_script:
   - cat stitch-debug.log
