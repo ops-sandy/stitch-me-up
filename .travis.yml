@@ -7,3 +7,6 @@ sudo: required
 
 services:
   - docker
+
+after_script:
+  - cat stitch-debug.log
