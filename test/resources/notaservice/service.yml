@@ -1,7 +1,6 @@
 namespace: notaservice
 
-public:
-  - web:1337
+public: web:1337
 
 services:
   web:

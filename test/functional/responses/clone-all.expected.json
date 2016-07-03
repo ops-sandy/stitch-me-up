@@ -1,8 +1,8 @@
 {
-  "microserviceA/service-a": "(service-a-response,(service-b-response#develop,(service-c-response,(service-d-response,(service-c2-response)))),(service-c-response,(service-d-response,(service-c2-response))))",
-  "microserviceB/service-b": "(service-b-response#develop,(service-c-response,(service-d-response,(service-c2-response))))",
-  "microserviceC/service-c": "(service-c-response,(service-d-response,(service-c2-response)))",
+  "microserviceA/service-a": "(service-a-response,(service-b-response#develop,(service-c-response,(service-d-response-post-1.0,(service-c2-response)))),(service-c-response,(service-d-response-post-1.0,(service-c2-response))))",
+  "microserviceB/service-b": "(service-b-response#develop,(service-c-response,(service-d-response-post-1.0,(service-c2-response))))",
+  "microserviceC/service-c": "(service-c-response,(service-d-response-post-1.0,(service-c2-response)))",
   "microserviceC/service-c2": "(service-c2-response)",
-  "microserviceD/service-d": "(service-d-response,(service-c2-response))",
-  "microserviceRoot/root": "(local-service-root,(service-a-response,(service-b-response#develop,(service-c-response,(service-d-response,(service-c2-response)))),(service-c-response,(service-d-response,(service-c2-response)))),(service-d-response,(service-c2-response)))"
+  "microserviceD/service-d": "(service-d-response-post-1.0,(service-c2-response))",
+  "microserviceRoot/root": "(local-service-root,(service-a-response,(service-b-response#develop,(service-c-response,(service-d-response-post-1.0,(service-c2-response)))),(service-c-response,(service-d-response-post-1.0,(service-c2-response)))),(service-d-response-post-1.0,(service-c2-response)))"
 }

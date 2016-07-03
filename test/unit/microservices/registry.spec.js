@@ -18,9 +18,7 @@ const ROOT_PROJECT_DIR = path.join(__dirname, '../../..')
 
 const EXPECTED_SERVICE_YML = {
   namespace: 'ns',
-  public: [
-    'web:3000',
-  ],
+  public: 'web:3000',
   path: 'test/resources/cache-dir/feature-flags',
   services: {
     web: {

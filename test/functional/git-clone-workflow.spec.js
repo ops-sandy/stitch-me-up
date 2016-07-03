@@ -75,7 +75,8 @@ describe('git clone workflow', function () {
   })
 
   it('should use the branch/tag instead of the registry default when specified on the command line', function * () {
-    const cmd = `${STITCH_BIN} --with=microserviceA#special --with=microserviceC#special --registry=${launchUtils.REGISTRY_URL}`
+    const cmd = `${STITCH_BIN} --with=microserviceA#special --with=microserviceC#special`
+      + ` --registry=${launchUtils.REGISTRY_URL}`
     processInfo = yield launchUtils.launch(cmd, { cwd: ROOT_MICROSERVICE_DIR, env: processEnv })
 
     const apiResponses = yield launchUtils.queryApis(processInfo.urls)

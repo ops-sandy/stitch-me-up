@@ -123,25 +123,15 @@ describe('MicroserviceSpecificationValidator', function () {
         'Invalid microservice spec: \'public\' property must exist.')
     })
 
-    it('should throw if the public section is not an array', function () {
+    it('should throw if the public section is not a string', function () {
       spec.public = {}
 
       expect(() => validator.validate(spec)).to.throw(Error,
-        'Invalid microservice spec: \'public\' property must be an array')
+        'Invalid microservice spec: \'public\' property must be a string')
     })
 
-    it('should throw if the public section is empty', function () {
-      spec.public = []
-
-      expect(() => validator.validate(spec)).to.throw(Error,
-        'Invalid microservice spec: \'public\' property must expose at least one public container.')
-    })
-
-    it('should throw if the public section has an entry that doesn\'t exist in the services section', function () {
-      spec.public = [
-        'web:4000',
-        'queue:5000',
-      ]
+    it('should throw if the public service doesn\'t exist in the services section', function () {
+      spec.public = 'queue:5000'
 
       expect(() => validator.validate(spec)).to.throw(Error,
         'Invalid microservice spec: \'public\' property exposes unknown service \'queue\'.')
