@@ -3,6 +3,7 @@
     "git": "git@github.com:myapp/testMicrosvc",
     "mocks": {
       "git": "ssh+git@github.com/myapp/service-mocks",
+      "branch": "develop",
       "root": "testMicrosvc"
     },
     "environments": {
@@ -13,9 +14,11 @@
   "feature-flags": {
     "git": "git@github.com:myapp/feature-flags",
     "root": "service",
+    "branch": "1.0.0",
     "mocks": {
       "git": "git@github.com/myapp/service-mocks",
-      "root": "feature-flags"
+      "root": "feature-flags",
+      "branch": "1.0.0"
     },
     "environments": {
       "dev": "https://dev.featureflags.myapp.com",

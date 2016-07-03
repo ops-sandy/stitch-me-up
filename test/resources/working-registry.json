@@ -1,6 +1,7 @@
 {
   "testMicrosvc": {
     "git": "git@github.com:myapp/testMicrosvc",
+    "branch": "develop",
     "mocks": {
       "root": "mocks"
     }
@@ -13,6 +14,7 @@
   },
   "service-registry": {
     "git": "git@github.com:myapp/service-registry",
+    "branch": "1.0.0",
     "mocks": {
       "root": "mocks"
     }

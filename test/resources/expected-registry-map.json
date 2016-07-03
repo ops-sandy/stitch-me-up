@@ -5,14 +5,17 @@
       "prod": "https://testMicrosvc.myapp.com"
     },
     "git": "git@github.com:myapp/testMicrosvc",
+    "branch": "master",
     "mocks": {
       "git": "ssh+git@github.com/myapp/service-mocks",
+      "branch": "develop",
       "root": "testMicrosvc"
     }
   },
   "testMicrosvc-mocks": {
     "git": "ssh+git@github.com/myapp/service-mocks",
-    "root": "testMicrosvc"
+    "root": "testMicrosvc",
+    "branch": "develop"
   },
   "feature-flags": {
     "environments": {
@@ -20,14 +23,17 @@
       "prod": "https://featureflags.myapp.com"
     },
     "git": "git@github.com:myapp/feature-flags",
+    "branch": "1.0.0",
     "mocks": {
       "git": "git@github.com/myapp/service-mocks",
+      "branch": "1.0.0",
       "root": "feature-flags"
     },
     "root": "service"
   },
   "feature-flags-mocks": {
     "git": "git@github.com/myapp/service-mocks",
-    "root": "feature-flags"
+    "root": "feature-flags",
+    "branch": "1.0.0"
   }
 }

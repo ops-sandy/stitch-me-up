@@ -39,7 +39,7 @@ describe('MicroserviceCache', function () {
     })
 
     it('should create the cache dir, if it does not already exist', function * () {
-      yield microserviceCache.getCodebase('testMicrosvc', 'git@github.com:myapp/testMicrosvc')
+      yield microserviceCache.getCodebase('testMicrosvc', 'git@github.com:myapp/testMicrosvc', 'master')
 
       expect(fs.statSync(TEST_CACHE_DIR).isDirectory()).to.be.true
     })
@@ -48,12 +48,16 @@ describe('MicroserviceCache', function () {
       fs.mkdirSync(path.join(TEST_CACHE_DIR))
 
       const serviceDir = yield microserviceCache.getCodebase('testMicrosvc',
-        'git@github.com:myapp/testMicrosvc')
+        'git@github.com:myapp/testMicrosvc', 'master2')
 
       expect(commands).to.deep.equal([
         [
           'git clone git@github.com:myapp/testMicrosvc testMicrosvc',
           '/test/resources/test-cache-dir',
+        ],
+        [
+          'git checkout master2',
+          '/test/resources/test-cache-dir/testMicrosvc',
         ],
       ])
 
@@ -65,15 +69,15 @@ describe('MicroserviceCache', function () {
       fs.mkdirSync(path.join(TEST_CACHE_DIR, 'testMicrosvc'))
 
       const serviceDir = yield microserviceCache.getCodebase('testMicrosvc',
-        'git@github.com:myapp/testMicrosvc')
+        'git@github.com:myapp/testMicrosvc', 'develop')
 
       expect(commands).to.deep.equal([
         [
-          'git checkout master',
+          'git checkout develop',
           '/test/resources/test-cache-dir/testMicrosvc',
         ],
         [
-          'git pull origin master',
+          'git pull origin develop',
           '/test/resources/test-cache-dir/testMicrosvc',
         ],
       ])

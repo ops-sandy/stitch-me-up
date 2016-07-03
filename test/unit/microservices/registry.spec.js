@@ -14,6 +14,7 @@ const EXPECTED_REGISTRY_MAP = require('../../resources/expected-registry-map')
 const ENTITLEMENTS_OVERRIDE_PATH = path.join(__dirname, '../../resources/testMicrosvc-override')
 const NOTASERVICE_SERVICE_PATH = path.join(__dirname, '../../resources/notaservice')
 const PROJECT_ROOT_DIR = path.join(__dirname, '../../../')
+const ROOT_PROJECT_DIR = path.join(__dirname, '../../..')
 
 const EXPECTED_SERVICE_YML = {
   namespace: 'ns',
@@ -43,10 +44,16 @@ const EXPECTED_ENT_SERVICE_YML = Object.assign({}, EXPECTED_SERVICE_YML, {
   ],
 })
 
+// TODO: this test code is getting pretty dirty, will need a clean up soon
+
 describe('MicroserviceRegistry', function () {
+  let commands = []
+  beforeEach(function () {
+    commands = []
+  })
   before(function () {
-    mockRequire('co-exec', function* () {
-      // empty
+    mockRequire('co-exec', function* (command, options) {
+      commands.push([command, options.cwd.replace(ROOT_PROJECT_DIR, '')])
     })
   })
 
@@ -87,7 +94,6 @@ describe('MicroserviceRegistry', function () {
       const contents = yield registry.resolve('testMicrosvc', ['testMicrosvc'])
       contents.path = cleanPath(contents.path)
       delete contents.root
-      // TODO: this test code is getting pretty dirty, will need a clean up soon
 
       expect(contents).to.deep.equal(EXPECTED_ENT_SERVICE_YML)
     })
@@ -143,6 +149,21 @@ describe('MicroserviceRegistry', function () {
         ],
       }))
     })
+
+    it('should use the override branch if specified in the service reference', function * () {
+      yield registry.resolve('testMicrosvc', ['testMicrosvc#develop'])
+
+      expect(commands).to.deep.equal([
+        [
+          'git checkout develop',
+          '/test/resources/cache-dir/testMicrosvc-mocks',
+        ],
+        [
+          'git pull origin develop',
+          '/test/resources/cache-dir/testMicrosvc-mocks',
+        ],
+      ])
+    })
   })
 
   describe('#link()', function () {
@@ -197,6 +218,21 @@ describe('MicroserviceRegistry', function () {
       expect(visited).to.deep.equal([
         ['testMicrosvc', ['feature-flags', 'service-registry']],
         ['feature-flags', []],
+        ['service-registry', []],
+      ])
+    })
+
+    it('should visit the correct services when "services to visit" contains branch refs', function * () {
+      const toVisit = ['testMicrosvc#develop', 'feature-flags#1.0.0', 'service-registry#whatever']
+
+      const visited = []
+      yield realRegistry.visitServices(toVisit, (serviceConfig, serviceName) => {
+        visited.push([serviceName, serviceConfig.dependencies || []])
+      })
+
+      expect(visited).to.deep.equal([
+        ['testMicrosvc', ['feature-flags', 'service-registry']],
+        ['feature-flags', ['service-registry']],
         ['service-registry', []],
       ])
     })

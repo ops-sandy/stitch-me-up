@@ -36,7 +36,7 @@ describe('local-checkout-workflow', function () {
       try {
         processInfo.process.kill()
       } catch (err) {
-        console.log('Failed to kill process:', err)
+        console.log('Failed to kill process:', err.message)
       }
     }
 

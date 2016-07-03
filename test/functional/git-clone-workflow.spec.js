@@ -40,7 +40,7 @@ describe('git clone workflow', function () {
       try {
         processInfo.process.kill()
       } catch (err) {
-        console.log('Failed to kill process:', err)
+        console.log('Failed to kill process:', err.message)
       }
     }
 
@@ -66,24 +66,31 @@ describe('git clone workflow', function () {
     processInfo = yield launchUtils.launch(cmd, { cwd: ROOT_MICROSERVICE_DIR, env: processEnv })
 
     yield checkRepoAtLatestCommit('microserviceA')
-    yield checkRepoAtLatestCommit('microserviceB-mocks')
+    yield checkRepoAtLatestCommit('microserviceB-mocks', 'develop')
     yield checkRepoAtLatestCommit('microserviceC')
-    yield checkRepoAtLatestCommit('microserviceD-mocks')
+    yield checkRepoAtLatestCommit('microserviceD-mocks', '1.0.0')
 
     const apiResponses = yield launchUtils.queryApis(processInfo.urls)
     launchUtils.checkApiResponsesMatchExpected(apiResponses, 'pull-with-mocks')
+  })
+
+  it('should use the branch/tag instead of the registry default when specified on the command line', function * () {
+    const cmd = `${STITCH_BIN} --with=microserviceA#special --with=microserviceC#special --registry=${launchUtils.REGISTRY_URL}`
+    processInfo = yield launchUtils.launch(cmd, { cwd: ROOT_MICROSERVICE_DIR, env: processEnv })
+
+    const apiResponses = yield launchUtils.queryApis(processInfo.urls)
+    launchUtils.checkApiResponsesMatchExpected(apiResponses, 'special-branches')
   })
 
   function checkoutOldCommit(serviceName) {
     return exec('git checkout master^', { cwd: getServiceRepoPath(serviceName) })
   }
 
-  // TODO: we need to be able to specify a 'default' branch to use when cloning/using & the ability to override branches
-  function* checkRepoAtLatestCommit(serviceName) {
+  function* checkRepoAtLatestCommit(serviceName, branch) {
     console.log(`Checking ${serviceName} is at latest commit...`)
 
     const currentHead = yield exec('git rev-parse HEAD', { cwd: getServiceRepoPath(serviceName) })
-    const latestHead = yield exec('git rev-parse master', { cwd: getServiceRepoPath(serviceName) })
+    const latestHead = yield exec(`git rev-parse ${branch || 'master'}`, { cwd: getServiceRepoPath(serviceName) })
 
     expect(currentHead).to.equal(latestHead)
   }
