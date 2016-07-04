@@ -7,7 +7,6 @@ const app = new Application()
 app.run(process.argv).then(() => {
   console.log('DONE')
 }, (error) => {
-  console.log(error.message)
   console.log(error.stack)
 
   process.exit(1)
