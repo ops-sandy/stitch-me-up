@@ -32,7 +32,8 @@
         "3000:3000"
       ],
       "volumes": [
-        "test/resources/working-cache-dir/testMicrosvc:/app"
+        "test/resources/working-cache-dir/testMicrosvc:/app",
+        "~/.aws:/root/aws"
       ],
       "working_dir": "/app"
     },
