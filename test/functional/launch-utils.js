@@ -3,21 +3,26 @@
 const co = require('co')
 const fs = require('fs')
 const path = require('path')
+const fsUtils = require('fs-utils')
 const exec = require('child_process').exec
+const coExec = require('co-exec')
 const request = require('request-promise')
 const expect = require('chai').expect
 
+const TEST_CACHE_DIR = path.join(__dirname, '../resources/test-cache-dir')
+const TEST_MICROSERVICES_DIR = path.join(__dirname, '../resources/test-microservices')
+const ROOT_MICROSERVICE_DIR = path.join(TEST_MICROSERVICES_DIR, 'microserviceRoot')
 const FINISHED_LAUNCHING_REGEX = /(microservice[a-zA-Z]+) listening on/g
 const MICROSERVICE_COUNT = 5
 
 module.exports = {
   REGISTRY_URL: 'https://raw.githubusercontent.com/diosmosis/stitch-me-up-test-registry/master/services.json',
-
+  INCOMPLETE_REGISTRY_URL:
+    'https://raw.githubusercontent.com/diosmosis/stitch-me-up-test-registry/master/incomplete-services.json',
   queryApis,
-
   launch,
-
   checkApiResponsesMatchExpected,
+  setUpFunctionalTestSuite,
 }
 
 function queryApis(urls) {
@@ -33,11 +38,36 @@ function queryApis(urls) {
 
 const debugFile = fs.createWriteStream('stitch-debug.log', { flags: 'a' })
 
-function launch(cmd, options) {
+function setUpFunctionalTestSuite(suite) {
+  suite.timeout(180 * 1000)
+  suite.bail(true)
+
+  before(function * () {
+    try {
+      yield coExec(`rm -r "${TEST_CACHE_DIR}"`)
+    } catch (e) {
+      // ignore
+    }
+
+    expect(fsUtils.isDir(TEST_CACHE_DIR)).to.be.false
+  })
+
+  afterEach(function * () {
+    yield coExec('docker kill $(docker ps -f name=microservice -q) || true')
+  })
+}
+
+function launch(cmd, inOptions) {
+  const options = inOptions || {}
+
+  options.env = Object.assign({}, process.env, { STITCH_CACHE_DIR: TEST_CACHE_DIR }, options.env || {})
+  options.cwd = options.cwd || ROOT_MICROSERVICE_DIR
+
   return co(function* launchImpl() {
     debugFile.write(`*** starting ${cmd} ***\n`)
 
     const urls = {}
+    let allStdout = ''
 
     yield new Promise((resolve, reject) => {
       let interval = null
@@ -45,7 +75,6 @@ function launch(cmd, options) {
 
       const process = exec(cmd, options)
 
-      let allStdout = ''
       process.stdout.on('data', (data) => {
         allStdout += data.toString()
         debugFile.write(data)
@@ -62,7 +91,11 @@ function launch(cmd, options) {
 
         clearInterval(interval)
         resolved = true
-        reject(new Error(`stitch failed w/ error code ${code}`))
+
+        const error = new Error(`stitch failed w/ error code ${code}`)
+        error.stdout = allStdout
+
+        reject(error)
       })
 
       interval = setInterval(function () {
@@ -97,6 +130,7 @@ function launch(cmd, options) {
     return {
       process,
       urls,
+      stdout: allStdout,
     }
   })
 }

@@ -1,0 +1,8 @@
+{
+  "microserviceA/service-a":"mock-servicea-response",
+  "microserviceB/service-b":"(service-b-response#develop,mock-servicec-response)",
+  "microserviceC/service-c":"mock-servicec-response",
+  "microserviceC/service-c2":"(mock-service-c2-response)",
+  "microserviceD/service-d":"mock-serviced-response",
+  "microserviceRoot/root":"(local-service-root,mock-servicea-response,mock-serviced-response)"
+}

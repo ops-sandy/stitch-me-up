@@ -24,5 +24,14 @@
       "dev": "https://dev.featureflags.myapp.com",
       "prod": "https://featureflags.myapp.com"
     }
+  },
+  "widget-service": {
+    "mocks": {
+      "git": "git@github.com/myapp/service-mocks",
+      "root": "widget-service"
+    }
+  },
+  "service-registry": {
+    "git": "git@github.com:myapp/service-registry"
   }
 }

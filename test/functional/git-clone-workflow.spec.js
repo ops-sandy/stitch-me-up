@@ -4,11 +4,8 @@ const path = require('path')
 const exec = require('co-exec')
 const expect = require('chai').expect
 const launchUtils = require('./launch-utils')
-const fsUtils = require('fs-utils')
 
 const TEST_CACHE_DIR = path.join(__dirname, '../resources/test-cache-dir')
-const TEST_MICROSERVICES_DIR = path.join(__dirname, '../resources/test-microservices')
-const ROOT_MICROSERVICE_DIR = path.join(TEST_MICROSERVICES_DIR, 'microserviceRoot')
 const STITCH_BIN = path.join(__dirname, '../../bin/stitch')
 
 const MICROSERVICES_TO_TEST = [
@@ -19,38 +16,12 @@ const MICROSERVICES_TO_TEST = [
 ]
 
 describe('git clone workflow', function () {
-  this.timeout(180 * 1000)
-  this.bail(true)
-
-  const processEnv = Object.assign({}, process.env, { STITCH_CACHE_DIR: TEST_CACHE_DIR })
-
-  before(function * () {
-    try {
-      yield exec(`rm -r "${TEST_CACHE_DIR}"`)
-    } catch (e) {
-      // ignore
-    }
-
-    expect(fsUtils.isDir(TEST_CACHE_DIR)).to.be.false
-  })
-
-  let processInfo
-  afterEach(function * () {
-    if (processInfo) {
-      try {
-        processInfo.process.kill()
-      } catch (err) {
-        console.log('Failed to kill process:', err.message)
-      }
-    }
-
-    yield exec('docker kill $(docker ps -f name=microservice -q)')
-  })
+  launchUtils.setUpFunctionalTestSuite(this)
 
   it('should clone new repositories in the cache dir & use them in the final docker-compose', function * () {
     const cmd = `${STITCH_BIN} --with=microserviceA,microserviceB --with microserviceC --with=microserviceD `
       + `--registry=${launchUtils.REGISTRY_URL}`
-    processInfo = yield launchUtils.launch(cmd, { cwd: ROOT_MICROSERVICE_DIR, env: processEnv })
+    const processInfo = yield launchUtils.launch(cmd)
 
     const apiResponses = yield launchUtils.queryApis(processInfo.urls)
     launchUtils.checkApiResponsesMatchExpected(apiResponses, 'clone-all')
@@ -63,7 +34,7 @@ describe('git clone workflow', function () {
     console.log('...Done.')
 
     const cmd = `${STITCH_BIN} --with=microserviceA,microserviceC --registry=${launchUtils.REGISTRY_URL}`
-    processInfo = yield launchUtils.launch(cmd, { cwd: ROOT_MICROSERVICE_DIR, env: processEnv })
+    const processInfo = yield launchUtils.launch(cmd)
 
     yield checkRepoAtLatestCommit('microserviceA')
     yield checkRepoAtLatestCommit('microserviceB-mocks', 'develop')
@@ -77,7 +48,7 @@ describe('git clone workflow', function () {
   it('should use the branch/tag instead of the registry default when specified on the command line', function * () {
     const cmd = `${STITCH_BIN} --with=microserviceA#special --with=microserviceC#special`
       + ` --registry=${launchUtils.REGISTRY_URL}`
-    processInfo = yield launchUtils.launch(cmd, { cwd: ROOT_MICROSERVICE_DIR, env: processEnv })
+    const processInfo = yield launchUtils.launch(cmd)
 
     const apiResponses = yield launchUtils.queryApis(processInfo.urls)
     launchUtils.checkApiResponsesMatchExpected(apiResponses, 'special-branches')

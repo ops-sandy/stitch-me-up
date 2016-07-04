@@ -35,5 +35,21 @@
     "git": "git@github.com/myapp/service-mocks",
     "root": "feature-flags",
     "branch": "1.0.0"
+  },
+  "service-registry": {
+    "branch": "master",
+    "git": "git@github.com:myapp/service-registry"
+  },
+  "widget-service": {
+    "branch": "master",
+    "mocks": {
+      "git": "git@github.com/myapp/service-mocks",
+      "root": "widget-service"
+    }
+  },
+  "widget-service-mocks": {
+    "branch": "master",
+    "git": "git@github.com/myapp/service-mocks",
+    "root": "widget-service"
   }
 }

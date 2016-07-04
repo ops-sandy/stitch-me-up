@@ -108,6 +108,18 @@ describe('MicroserviceRegistry', function () {
       expect(error.message).to.match(/^Invalid microservice spec/)
     })
 
+    it('should fail to load the service YML if there is no git repo configured for the service', function * () {
+      let error
+      try {
+        yield registry.resolve('widget-service', ['widget-service'])
+      } catch (e) {
+        error = e
+      }
+
+      expect(error).to.be.instanceof(Error)
+      expect(error.message).to.equal('Service \'widget-service\' has no git repo in the registry.')
+    })
+
     it('should load mock services correctly', function * () {
       const testMicrosvcMock = yield registry.resolve('testMicrosvc', [])
       testMicrosvcMock.path = cleanPath(testMicrosvcMock.path)
@@ -127,6 +139,19 @@ describe('MicroserviceRegistry', function () {
         path: 'test/resources/cache-dir/feature-flags-mocks',
         namespace: 'ff',
       }))
+    })
+
+    it('should fail to load mocks for a service that has no mock config in the registry', function * () {
+      let error
+      try {
+        yield registry.resolve('service-registry', [])
+      } catch (e) {
+        error = e
+      }
+
+      expect(error).to.be.instanceof(Error)
+      expect(error.message).to.equal('Cannot find mocks for service \'service-registry\', '
+        + 'make sure the service has a mocks section in the registry.')
     })
 
     it('should use the override path if a directory is linked', function * () {
