@@ -1,0 +1,3 @@
+[submodule "test/resources/test-microservices/microserviceRoot"]
+	path = test/resources/test-microservices/microserviceRoot
+	url = https://github.com/diosmosis/stitch-me-up-test-microserviceRoot.git
