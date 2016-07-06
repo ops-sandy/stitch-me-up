@@ -66,8 +66,10 @@ function launch(cmd, inOptions) {
   return co(function* launchImpl() {
     debugFile.write(`*** starting ${cmd} ***\n`)
 
-    const urls = {}
-    let allStdout = ''
+    const processInfo = {
+      stdout: '',
+      urls: {},
+    }
 
     yield new Promise((resolve, reject) => {
       let interval = null
@@ -76,7 +78,7 @@ function launch(cmd, inOptions) {
       const process = exec(cmd, options)
 
       process.stdout.on('data', (data) => {
-        allStdout += data.toString()
+        processInfo.stdout += data.toString()
         debugFile.write(data)
       })
 
@@ -92,8 +94,8 @@ function launch(cmd, inOptions) {
         clearInterval(interval)
         resolved = true
 
-        const error = new Error(`stitch failed w/ error code ${code}`)
-        error.stdout = allStdout
+        const error = new Error(`stitch failed w/ error code ${code}, check stitch-debug.log for more info`)
+        error.stdout = processInfo.stdout
 
         reject(error)
       })
@@ -101,16 +103,16 @@ function launch(cmd, inOptions) {
       interval = setInterval(function () {
         let regexResult
         // eslint-disable-next-line no-cond-assign
-        while ((regexResult = FINISHED_LAUNCHING_REGEX.exec(allStdout)) !== null) {
+        while ((regexResult = FINISHED_LAUNCHING_REGEX.exec(processInfo.stdout)) !== null) {
           const microservice = regexResult[1]
 
-          const urlMatch = new RegExp(`Launching ${microservice} at (.*)$`, 'gm').exec(allStdout)
+          const urlMatch = new RegExp(`Launching ${microservice} at (.*)$`, 'gm').exec(processInfo.stdout)
           if (urlMatch) {
-            urls[microservice] = urlMatch[1]
+            processInfo.urls[microservice] = urlMatch[1]
           }
         }
 
-        if (Object.keys(urls).length === MICROSERVICE_COUNT) {
+        if (Object.keys(processInfo.urls).length === MICROSERVICE_COUNT) {
           finish()
         }
       }, 5000)
@@ -127,11 +129,7 @@ function launch(cmd, inOptions) {
       }
     })
 
-    return {
-      process,
-      urls,
-      stdout: allStdout,
-    }
+    return processInfo
   })
 }
 

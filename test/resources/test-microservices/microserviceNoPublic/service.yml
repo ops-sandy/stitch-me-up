@@ -1,0 +1,12 @@
+namespace: microserviceNoPublic
+
+services:
+  web:
+    image: node:4
+    volumes:
+      - .:/microserviceNoPublic
+    working_dir: /microserviceNoPublic
+    command: [npm, start]
+
+setup:
+  - npm install

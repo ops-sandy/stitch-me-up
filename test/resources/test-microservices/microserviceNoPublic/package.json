@@ -1,0 +1,14 @@
+{
+  "name": "stitch-me-up-test-non-public-microservice",
+  "version": "1.0.0",
+  "description": "Test microservice for stitch-me-up functional tests.",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node lib/index.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+  }
+}

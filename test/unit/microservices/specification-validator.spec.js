@@ -116,10 +116,10 @@ describe('MicroserviceSpecificationValidator', function () {
     })
 
     // public section
-    it('should throw if the public section does not exist', function () {
+    it('should not throw if the public section does not exist', function () {
       delete spec.public
 
-      expect(() => validator.validate(spec)).to.throw(Error,
+      expect(() => validator.validate(spec)).to.not.throw(Error,
         'Invalid microservice spec: \'public\' property must exist.')
     })
 

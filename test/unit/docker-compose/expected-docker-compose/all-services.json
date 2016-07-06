@@ -85,13 +85,7 @@
       ],
       "working_dir": "/app"
     },
-    "widget-service_mysql": {
-      "image": "mysql",
-      "networks": [
-        "widget-service_net"
-      ]
-    },
-    "widget-service": {
+    "widget-service_web": {
       "command": [
         "npm",
         "start"
@@ -104,16 +98,18 @@
         "widget-service_mysql:mysql"
       ],
       "networks": [
-        "widget-service_net",
-        "default"
-      ],
-      "ports": [
-        "3003:3000"
+        "widget-service_net"
       ],
       "volumes": [
         "test/resources/working-cache-dir/widget-service:/app"
       ],
       "working_dir": "/app"
+    },
+    "widget-service_mysql": {
+      "image": "mysql",
+      "networks": [
+        "widget-service_net"
+      ]
     }
   },
   "version": "2"

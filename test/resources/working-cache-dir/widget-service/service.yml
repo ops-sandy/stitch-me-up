@@ -1,7 +1,5 @@
 namespace: widget-service
 
-public: web:3000
-
 services:
   web:
     image: node:4
