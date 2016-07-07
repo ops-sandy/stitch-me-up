@@ -15,7 +15,7 @@ describe('no public interface', function () {
     STITCH_REGISTRY: launchUtils.REGISTRY_URL,
   }
 
-  it.only('should launch services w/o public interfaces correctly', function * () {
+  it('should launch services w/o public interfaces correctly', function * () {
     const cmd = `${STITCH_BIN} --with=microserviceA --link "${LOCAL_MICROSERVICE_NO_PUBLIC}"`
     const processInfo = yield launchUtils.launch(cmd, { env: processEnv })
 
