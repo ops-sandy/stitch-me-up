@@ -1,6 +1,6 @@
 {
   "name": "stitch-me-up",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Stitch microservices together with docker & docker-compose.",
   "main": "lib/index.js",
   "scripts": {
