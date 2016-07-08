@@ -42,8 +42,9 @@ function setUpFunctionalTestSuite(suite) {
   suite.timeout(180 * 1000)
   suite.bail(true)
 
-  if (!fsUtils.exists(ROOT_MICROSERVICE_DIR)) {
-    throw new Error(`${ROOT_MICROSERVICE_DIR} does not exist, make sure you ran 'git submodule update --init'`)
+  const rootMicroserviceSpec = path.join(ROOT_MICROSERVICE_DIR, 'service.yml')
+  if (!fsUtils.exists(rootMicroserviceSpec)) {
+    throw new Error(`${rootMicroserviceSpec} does not exist, make sure you ran 'git submodule update --init'`)
   }
 
   before(function * () {
