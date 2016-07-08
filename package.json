@@ -23,8 +23,9 @@
     "local",
     "deployment"
   ],
-  "author": "MHEducation",
-  "license": "MIT",
+  "preferGlobal": true,
+  "author": "diosmosis",
+  "license": "Apache 2.0",
   "bugs": {
     "url": "https://github.com/diosmosis/stitch-me-up/issues"
   },
