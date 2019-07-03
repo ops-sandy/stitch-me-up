@@ -7,7 +7,9 @@
     "lint": "eslint .",
     "test-unit": "mocha --require co-mocha ./test/unit/**/*.spec.js",
     "test-functional": "mocha --require co-mocha ./test/functional/**/*.spec.js",
-    "test": "npm run lint && npm run test-unit && npm run test-functional"
+    "test": "npm run lint && npm run test-unit && npm run test-functional",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "bin": {
     "stitch": "./bin/stitch"
@@ -48,6 +50,8 @@
     "minimist": "^1.2.0",
     "passthru": "git+https://github.com/diosmosis/node-passthru.git#argv-split",
     "request-promise": "^3.0.0",
-    "valid-url": "^1.0.9"
-  }
+    "valid-url": "^1.0.9",
+    "snyk": "^1.189.0"
+  },
+  "snyk": true
 }
