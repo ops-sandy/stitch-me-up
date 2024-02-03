@@ -47,7 +47,7 @@
     "lodash": "^4.13.1",
     "minimist": "^1.2.0",
     "passthru": "git+https://github.com/diosmosis/node-passthru.git#argv-split",
-    "request-promise": "^3.0.0",
+    "request-promise": "^4.2.6",
     "valid-url": "^1.0.9"
   }
 }
